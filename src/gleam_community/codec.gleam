@@ -105,6 +105,12 @@ pub fn string() -> Codec(String) {
   Codec(encode: json.string, decode: dynamic.string)
 }
 
+///
+///
+pub fn bool() {
+  Codec(encode: json.bool, decode: dynamic.bool)
+}
+
 // CONSTRUCTORS: CONTAINERS ----------------------------------------------------
 
 ///
