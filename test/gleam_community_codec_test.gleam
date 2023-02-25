@@ -47,3 +47,11 @@ pub fn custom_type_test() {
   |> codec.decode_string(example_codec)
   |> should.equal(Ok(Baz("hello", 42)))
 }
+
+pub fn bool_test() {
+  let bool_codec = codec.bool()
+
+  codec.encode_string(True, bool_codec)
+  |> codec.decode_string(bool_codec)
+  |> should.equal(Ok(True))
+}
