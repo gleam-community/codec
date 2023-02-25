@@ -21,10 +21,10 @@ pub type Colour {
 }
 
 pub fn colour_codec() {
-  codec.custom3(fn(rgb, name, value) {
+  codec.custom2(fn(rgb, name, value) {
     case value {
       RGB(r, g, b) -> rgb(r, g, b)
-      Name(name) -> name(name)
+      Name(n) -> name(n)
     }
   })
   |> codec.variant3("RGB", RGB, codec.int(), codec.int(), codec.int())
