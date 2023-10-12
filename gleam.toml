@@ -10,7 +10,7 @@ description = "A package for keeping your encoders and decoders in sync."
 # links = [{ title = "Website", href = "https://gleam.run" }]
 
 [dependencies]
-gleam_stdlib = "~> 0.26"
+gleam_stdlib = "~> 0.31"
 gleam_json = "~> 0.5"
 
 [dev-dependencies]
