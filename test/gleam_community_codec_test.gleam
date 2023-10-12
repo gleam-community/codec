@@ -1,7 +1,8 @@
+import gleam_community/codec
+import gleam/dynamic
+import gleam/json
 import gleeunit
 import gleeunit/should
-import gleam_community/codec
-import gleam/io
 
 pub fn main() {
   gleeunit.main()
@@ -23,17 +24,19 @@ type Example {
 
 pub fn custom_type_test() {
   let example_codec =
-    codec.custom3(fn(foo, bar, baz, value) {
-      case value {
-        Foo -> foo
-        Bar(s) -> bar(s)
-        Baz(s, i) -> baz(s, i)
-      }
+    codec.custom({
+      use foo <- codec.variant0("Foo", Foo)
+      use bar <- codec.variant1("Bar", Bar, codec.string())
+      use baz <- codec.variant2("Baz", Baz, codec.string(), codec.int())
+
+      codec.make_custom(fn(value) {
+        case value {
+          Foo -> foo
+          Bar(s) -> bar(s)
+          Baz(s, i) -> baz(s, i)
+        }
+      })
     })
-    |> codec.variant0("Foo", Foo)
-    |> codec.variant1("Bar", Bar, codec.string())
-    |> codec.variant2("Baz", Baz, codec.string(), codec.int())
-    |> codec.construct
 
   codec.encode_string(Foo, example_codec)
   |> codec.decode_string(example_codec)
