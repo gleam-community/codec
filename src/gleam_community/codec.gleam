@@ -1,14 +1,14 @@
 // IMPORTS ---------------------------------------------------------------------
 
-import gleam/dynamic.{DecodeError as DynamicError, Dynamic}
+import gleam/dynamic.{type DecodeError as DynamicError, DecodeError as DynamicError, type Dynamic}
 import gleam/function
-import gleam/json.{DecodeError as JsonError, Json}
+import gleam/json.{type DecodeError as JsonError, type Json}
 import gleam/list
-import gleam/map.{Map}
-import gleam/option.{Option}
+import gleam/map.{type Map}
+import gleam/option.{type Option}
 import gleam/pair
 import gleam/result
-import gleam/string_builder.{StringBuilder}
+import gleam/string_builder.{type StringBuilder}
 import gleam/int
 
 // TYPES -----------------------------------------------------------------------
@@ -95,12 +95,6 @@ pub fn float() -> Codec(Float) {
 ///
 pub fn string() -> Codec(String) {
   Codec(encode: json.string, decode: dynamic.string)
-}
-
-///
-///
-pub fn bool() -> Codec(Bool) {
-  Codec(encode: json.bool, decode: dynamic.bool)
 }
 
 ///
