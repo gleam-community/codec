@@ -1,10 +1,12 @@
 // IMPORTS ---------------------------------------------------------------------
 
-import gleam/dynamic.{type DecodeError as DynamicError, DecodeError as DynamicError, type Dynamic}
+import gleam/dynamic.{
+  type DecodeError as DynamicError, type Dynamic, DecodeError as DynamicError,
+}
 import gleam/function
 import gleam/json.{type DecodeError as JsonError, type Json}
 import gleam/list
-import gleam/map.{type Map}
+import gleam/dict.{type Dict}
 import gleam/option.{type Option}
 import gleam/pair
 import gleam/result
@@ -32,7 +34,7 @@ import gleam/int
 ///
 /// Importantly, the codec API means our encoders and decoders stay _isomorphic_.
 /// That is, we can guarantee that the conversions to JSON and from `Dynamic` are
-/// always in sync. 
+/// always in sync.
 ///
 pub opaque type Codec(a) {
   Codec(
@@ -44,7 +46,7 @@ pub opaque type Codec(a) {
 ///
 ///
 pub opaque type Custom(a) {
-  Custom(encode: fn(a) -> Json, decode: Map(String, Decoder(a)))
+  Custom(encode: fn(a) -> Json, decode: Dict(String, Decoder(a)))
 }
 
 ///
@@ -125,23 +127,23 @@ pub fn optional(codec: Codec(a)) -> Codec(Option(a)) {
 
 ///
 ///
-pub fn object(codec: Codec(a)) -> Codec(Map(String, a)) {
-  let encode = fn(map) {
-    map
-    |> map.to_list
+pub fn object(codec: Codec(a)) -> Codec(Dict(String, a)) {
+  let encode = fn(dict) {
+    dict
+    |> dict.to_list
     |> list.map(pair.map_second(_, codec.encode))
     |> json.object
   }
-  let decode = dynamic.map(dynamic.string, codec.decode)
+  let decode = dynamic.dict(dynamic.string, codec.decode)
 
   Codec(encode, decode)
 }
 
 ///
 ///
-pub fn dictionary(key_codec: Codec(k), val_codec: Codec(v)) -> Codec(Map(k, v)) {
+pub fn dictionary(key_codec: Codec(k), val_codec: Codec(v)) -> Codec(Dict(k, v)) {
   list(tuple2(key_codec, val_codec))
-  |> map(map.to_list, map.from_list)
+  |> dict(dict.to_list, dict.from_list)
 }
 
 ///
@@ -194,18 +196,15 @@ pub fn tuple3(
 // CONSTRUCTORS: CUSTOM TYPES --------------------------------------------------
 
 pub fn custom(builder: Custom(a)) -> Codec(a) {
-  Codec(
-    encode: builder.encode,
-    decode: fn(dyn) {
-      let decode_tag = dynamic.field("$", dynamic.string)
-      use tag <- result.then(decode_tag(dyn))
+  Codec(encode: builder.encode, decode: fn(dyn) {
+    let decode_tag = dynamic.field("$", dynamic.string)
+    use tag <- result.then(decode_tag(dyn))
 
-      case map.get(builder.decode, tag) {
-        Ok(decoder) -> decoder(dyn)
-        Error(_) -> Error([DynamicError("Unknown tag", tag, ["$"])])
-      }
-    },
-  )
+    case dict.get(builder.decode, tag) {
+      Ok(decoder) -> decoder(dyn)
+      Error(_) -> Error([DynamicError("Unknown tag", tag, ["$"])])
+    }
+  })
 }
 
 pub opaque type Variant(a) {
@@ -241,7 +240,7 @@ pub fn make_variant(_: Int) -> List(Decoder(Dynamic)) {
 }
 
 pub fn make_custom(encode: fn(a) -> Json) -> Custom(a) {
-  Custom(encode, decode: map.new())
+  Custom(encode, decode: dict.new())
 }
 
 pub fn variant0(
@@ -253,7 +252,7 @@ pub fn variant0(
   let decoder = fn(_) { Ok(constructor) }
   let builder = builder(encoder)
 
-  Custom(..builder, decode: map.insert(builder.decode, tag, decoder))
+  Custom(..builder, decode: dict.insert(builder.decode, tag, decoder))
 }
 
 pub fn variant1(
@@ -268,7 +267,7 @@ pub fn variant1(
   let decoder = dynamic.decode1(constructor, dynamic.field("0", codec_a.decode))
   let builder = builder(encoder)
 
-  Custom(..builder, decode: map.insert(builder.decode, tag, decoder))
+  Custom(..builder, decode: dict.insert(builder.decode, tag, decoder))
 }
 
 pub fn variant2(
@@ -293,7 +292,7 @@ pub fn variant2(
     )
   let builder = builder(encoder)
 
-  Custom(..builder, decode: map.insert(builder.decode, tag, decoder))
+  Custom(..builder, decode: dict.insert(builder.decode, tag, decoder))
 }
 
 pub fn variant3(
@@ -321,7 +320,7 @@ pub fn variant3(
     )
   let builder = builder(encoder)
 
-  Custom(..builder, decode: map.insert(builder.decode, tag, decoder))
+  Custom(..builder, decode: dict.insert(builder.decode, tag, decoder))
 }
 
 pub fn variant4(
@@ -352,7 +351,7 @@ pub fn variant4(
     )
   let builder = builder(encoder)
 
-  Custom(..builder, decode: map.insert(builder.decode, tag, decoder))
+  Custom(..builder, decode: dict.insert(builder.decode, tag, decoder))
 }
 
 pub fn variant5(
@@ -386,7 +385,7 @@ pub fn variant5(
     )
   let builder = builder(encoder)
 
-  Custom(..builder, decode: map.insert(builder.decode, tag, decoder))
+  Custom(..builder, decode: dict.insert(builder.decode, tag, decoder))
 }
 
 pub fn variant6(
@@ -423,7 +422,7 @@ pub fn variant6(
     )
   let builder = builder(encoder)
 
-  Custom(..builder, decode: map.insert(builder.decode, tag, decoder))
+  Custom(..builder, decode: dict.insert(builder.decode, tag, decoder))
 }
 
 pub fn variant7(
@@ -463,7 +462,7 @@ pub fn variant7(
     )
   let builder = builder(encoder)
 
-  Custom(..builder, decode: map.insert(builder.decode, tag, decoder))
+  Custom(..builder, decode: dict.insert(builder.decode, tag, decoder))
 }
 
 pub fn variant8(
@@ -506,7 +505,7 @@ pub fn variant8(
     )
   let builder = builder(encoder)
 
-  Custom(..builder, decode: map.insert(builder.decode, tag, decoder))
+  Custom(..builder, decode: dict.insert(builder.decode, tag, decoder))
 }
 
 // QUERIES ---------------------------------------------------------------------
@@ -546,7 +545,7 @@ pub fn then(
 
 ///
 ///
-pub fn map(codec: Codec(a), from: fn(b) -> a, to: fn(a) -> b) -> Codec(b) {
+pub fn dict(codec: Codec(a), from: fn(b) -> a, to: fn(a) -> b) -> Codec(b) {
   use a <- then(codec, from)
   succeed(to(a))
 }

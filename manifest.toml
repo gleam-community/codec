@@ -2,13 +2,13 @@
 # You typically do not need to edit this file
 
 packages = [
-  { name = "gleam_json", version = "0.6.0", build_tools = ["gleam"], requirements = ["gleam_stdlib", "thoas"], otp_app = "gleam_json", source = "hex", outer_checksum = "C6CC5BEECA525117E97D0905013AB3F8836537455645DDDD10FE31A511B195EF" },
-  { name = "gleam_stdlib", version = "0.31.0", build_tools = ["gleam"], requirements = [], otp_app = "gleam_stdlib", source = "hex", outer_checksum = "6D1BC5B4D4179B9FEE866B1E69FE180AC2CE485AD90047C0B32B2CA984052736" },
-  { name = "gleeunit", version = "0.11.0", build_tools = ["gleam"], requirements = ["gleam_stdlib"], otp_app = "gleeunit", source = "hex", outer_checksum = "1397E5C4AC4108769EE979939AC39BF7870659C5AFB714630DEEEE16B8272AD5" },
+  { name = "gleam_json", version = "0.7.0", build_tools = ["gleam"], requirements = ["thoas", "gleam_stdlib"], otp_app = "gleam_json", source = "hex", outer_checksum = "CB405BD93A8828BCD870463DE29375E7B2D252D9D124C109E5B618AAC00B86FC" },
+  { name = "gleam_stdlib", version = "0.35.1", build_tools = ["gleam"], requirements = [], otp_app = "gleam_stdlib", source = "hex", outer_checksum = "5443EEB74708454B65650FEBBB1EF5175057D1DEC62AEA9D7C6D96F41DA79152" },
+  { name = "gleeunit", version = "1.0.2", build_tools = ["gleam"], requirements = ["gleam_stdlib"], otp_app = "gleeunit", source = "hex", outer_checksum = "D364C87AFEB26BDB4FB8A5ABDE67D635DC9FA52D6AB68416044C35B096C6882D" },
   { name = "thoas", version = "0.4.1", build_tools = ["rebar3"], requirements = [], otp_app = "thoas", source = "hex", outer_checksum = "4918D50026C073C4AB1388437132C77A6F6F7C8AC43C60C13758CC0ADCE2134E" },
 ]
 
 [requirements]
 gleam_json = { version = "~> 0.5" }
 gleam_stdlib = { version = "~> 0.31" }
-gleeunit = { version = "~> 0.10" }
+gleeunit = { version = "~> 1.0" }
